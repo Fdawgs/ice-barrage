@@ -1,0 +1,13 @@
+{
+	"arrowParens": "always",
+	"semi": true,
+	"trailingComma": "es5",
+	"overrides": [
+		{
+			"files": ["*.css", "*.html", "*.scss"],
+			"options": {
+				"bracketSameLine": true
+			}
+		}
+	]
+}
