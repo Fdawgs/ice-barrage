@@ -35,7 +35,7 @@ describe("iceBarrage function", () => {
 		}, TypeError);
 	});
 
-	it("Freeze an object with depth of 5", (/** @type {TestContext} */ t) => {
+	it("Freezes an object with depth of 5", (/** @type {TestContext} */ t) => {
 		const obj = {
 			level1: {
 				level2: {
@@ -145,5 +145,34 @@ describe("iceBarrage function", () => {
 		t.assert.throws(() => {
 			result.hidden.secret = "changed";
 		}, TypeError);
+	});
+
+	it("Freezes objects with circular references", (/** @type {TestContext} */ t) => {
+		/** @type {{ name: string; self?: object }} */
+		const obj = { name: "circle" };
+		obj.self = obj; // Create circular reference
+		const result = iceBarrage(obj);
+
+		t.assert.strictEqual(Object.isFrozen(result), true);
+		t.assert.strictEqual(Object.isFrozen(result.self), true);
+		t.assert.throws(() => {
+			// @ts-expect-error Testing mutation on frozen property
+			result.name = "changed";
+		}, TypeError);
+	});
+
+	it("Freezes objects with falsy property values", (/** @type {TestContext} */ t) => {
+		const obj = {
+			zero: 0,
+			emptyStr: "",
+			falseBool: false,
+			nullVal: null,
+			nested: { deep: { value: 1 } },
+		};
+		const result = iceBarrage(obj);
+
+		t.assert.strictEqual(Object.isFrozen(result), true);
+		t.assert.strictEqual(Object.isFrozen(result.nested), true);
+		t.assert.strictEqual(Object.isFrozen(result.nested.deep), true);
 	});
 });
