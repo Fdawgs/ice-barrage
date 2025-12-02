@@ -35,10 +35,10 @@ const exampleObject = {
 	},
 };
 
-const frozenObject = iceBarrage(exampleObject);
-console.log(Object.isFrozen(frozenObject)); // true
-console.log(Object.isFrozen(frozenObject.b)); // true
-console.log(Object.isFrozen(frozenObject.b.d)); // true
+iceBarrage(exampleObject); // iceBarrage mutates the input object
+console.log(Object.isFrozen(exampleObject)); // true
+console.log(Object.isFrozen(exampleObject.b)); // true
+console.log(Object.isFrozen(exampleObject.b.d)); // true
 ```
 
 ## Contributing
