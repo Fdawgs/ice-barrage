@@ -20,10 +20,10 @@ function freeze(target, seen) {
 	 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
 	 */
 	for (let i = 0; i < keysLength; i += 1) {
-		const key = keys[i];
-		const value = target[key];
-
-		if (value) {
+		const value = /** @type {Record<string | symbol, unknown>} */ (target)[
+			keys[i]
+		];
+		if (value !== null) {
 			if (typeof value === "object" || typeof value === "function") {
 				freeze(value, seen);
 			}
