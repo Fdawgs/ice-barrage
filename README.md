@@ -10,7 +10,7 @@
 
 # Overview
 
-`ice-barrage` is a drop-in replacement for `deep-freeze`, with added TypeScript support, improved performance, and better handling of edge cases such as circular references.
+`ice-barrage` is a drop-in replacement for `deep-freeze`, with added TypeScript support, improved performance, and handling of edge cases such as circular references.
 
 ## Installation
 
