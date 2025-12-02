@@ -1,6 +1,8 @@
 "use strict";
 
 /**
+ * @description Recursively freezes an object and its nested properties.
+ * This mutates the original object.
  * @template {object} T
  * @param {T} target - The object to be frozen.
  * @param {WeakSet<object>} seen - Set to track visited objects.
@@ -35,6 +37,7 @@ function freeze(target, seen) {
 
 /**
  * @description Recursively freezes an object and its nested properties.
+ * This mutates the original object.
  * @template {object} T
  * @param {T} obj - The object, array, or function to be frozen.
  * @returns {Readonly<T>} The frozen object, array, or function.

@@ -45,26 +45,25 @@ function isDeepFrozen(obj, seen = new WeakSet()) {
 describe("iceBarrage function", () => {
 	it("Freezes an object with depth of one", (/** @type {TestContext} */ t) => {
 		const obj = { a: 1, b: "hello", c: true };
-		const result = iceBarrage(obj);
+		iceBarrage(obj);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
+		t.assert.strictEqual(isDeepFrozen(obj), true);
 		t.assert.throws(() => {
-			// @ts-expect-error Testing mutation on frozen property
-			result.a = 2;
+			obj.a = 2;
 		}, TypeError);
 	});
 
 	it("Freezes an array of objects", (/** @type {TestContext} */ t) => {
 		const arr = [{ a: 1 }, { b: 2 }, { c: 3 }];
-		const result = iceBarrage(arr);
+		iceBarrage(arr);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
+		t.assert.strictEqual(isDeepFrozen(arr), true);
 		t.assert.throws(() => {
-			result[0].a = 10;
+			arr[0].a = 10;
 		}, TypeError);
 		t.assert.throws(() => {
 			// @ts-expect-error Testing mutation on frozen property
-			result.push({ d: 4 });
+			arr.push({ d: 4 });
 		}, TypeError);
 	});
 
@@ -82,23 +81,23 @@ describe("iceBarrage function", () => {
 				},
 			},
 		};
-		const result = iceBarrage(obj);
+		iceBarrage(obj);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
+		t.assert.strictEqual(isDeepFrozen(obj), true);
 		t.assert.throws(() => {
-			result.level1.level2.level3.level4.level5.value = "changed";
+			obj.level1.level2.level3.level4.level5.value = "changed";
 		}, TypeError);
 	});
 
 	it("Freezes properties with Symbol keys", (/** @type {TestContext} */ t) => {
 		const sym = Symbol("secret");
 		const obj = { [sym]: { nested: "value" } };
-		const result = iceBarrage(obj);
+		iceBarrage(obj);
 
-		t.assert.strictEqual(Object.isFrozen(result), true);
-		t.assert.strictEqual(Object.isFrozen(result[sym]), true);
+		t.assert.strictEqual(Object.isFrozen(obj), true);
+		t.assert.strictEqual(Object.isFrozen(obj[sym]), true);
 		t.assert.throws(() => {
-			result[sym].nested = "changed";
+			obj[sym].nested = "changed";
 		}, TypeError);
 	});
 
@@ -109,29 +108,27 @@ describe("iceBarrage function", () => {
 		}
 		fn.customProp = { a: 1 };
 		const obj = { myFunc: fn };
-		const result = iceBarrage(obj);
+		iceBarrage(obj);
 
-		t.assert.strictEqual(Object.isFrozen(result), true);
-		t.assert.strictEqual(Object.isFrozen(result.myFunc), true);
-		t.assert.strictEqual(Object.isFrozen(result.myFunc.customProp), true);
+		t.assert.strictEqual(Object.isFrozen(obj), true);
+		t.assert.strictEqual(Object.isFrozen(obj.myFunc), true);
+		t.assert.strictEqual(Object.isFrozen(obj.myFunc.customProp), true);
 		t.assert.throws(() => {
 			// @ts-expect-error Testing mutation on frozen property
-			result.myFunc.newProp = "test";
+			obj.myFunc.newProp = "test";
 		}, TypeError);
 	});
 
 	it("Freezes arrays of primitive values", (/** @type {TestContext} */ t) => {
 		const arr = [1, 2, 3, "a", "b", true, null];
-		const result = iceBarrage(arr);
+		iceBarrage(arr);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
+		t.assert.strictEqual(isDeepFrozen(arr), true);
 		t.assert.throws(() => {
-			// @ts-expect-error Testing mutation on frozen property
-			result[0] = 100;
+			arr[0] = 100;
 		}, TypeError);
 		t.assert.throws(() => {
-			// @ts-expect-error Testing mutation on frozen property
-			result.push(4);
+			arr.push(4);
 		}, TypeError);
 	});
 
@@ -142,9 +139,9 @@ describe("iceBarrage function", () => {
 			[sym]: "symbolValue",
 			fn: Object.assign(() => {}, { prop: { deep: true } }),
 		};
-		const result = iceBarrage(obj);
+		iceBarrage(obj);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
+		t.assert.strictEqual(isDeepFrozen(obj), true);
 	});
 
 	it("Freezes non-enumerable properties", (/** @type {TestContext} */ t) => {
@@ -153,26 +150,25 @@ describe("iceBarrage function", () => {
 			value: { secret: "data" },
 			enumerable: false,
 		});
-		const result = iceBarrage(obj);
+		iceBarrage(obj);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
-		t.assert.strictEqual(Object.isFrozen(result.hidden), true);
+		t.assert.strictEqual(isDeepFrozen(obj), true);
+		t.assert.strictEqual(Object.isFrozen(obj.hidden), true);
 		t.assert.throws(() => {
-			result.hidden.secret = "changed";
+			obj.hidden.secret = "changed";
 		}, TypeError);
 	});
 
 	it("Freezes objects with circular references", (/** @type {TestContext} */ t) => {
 		/** @type {{ name: string; self?: object }} */
 		const obj = { name: "circle" };
-		obj.self = obj; // Create circular reference
-		const result = iceBarrage(obj);
+		obj.self = obj;
+		iceBarrage(obj);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
-		t.assert.strictEqual(Object.isFrozen(result.self), true);
+		t.assert.strictEqual(isDeepFrozen(obj), true);
+		t.assert.strictEqual(Object.isFrozen(obj.self), true);
 		t.assert.throws(() => {
-			// @ts-expect-error Testing mutation on frozen property
-			result.name = "changed";
+			obj.name = "changed";
 		}, TypeError);
 	});
 
@@ -184,8 +180,8 @@ describe("iceBarrage function", () => {
 			nullVal: null,
 			nested: { deep: { value: 1 } },
 		};
-		const result = iceBarrage(obj);
+		iceBarrage(obj);
 
-		t.assert.strictEqual(isDeepFrozen(result), true);
+		t.assert.strictEqual(isDeepFrozen(obj), true);
 	});
 });
