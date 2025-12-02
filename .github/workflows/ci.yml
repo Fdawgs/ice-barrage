@@ -1,0 +1,167 @@
+name: CI
+
+# **What it does**: Runs tests.
+# **Why we have it**: Ensures tests pass before merging code.
+
+on:
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - "docs/**"
+            - "*.md"
+    pull_request:
+        branches:
+            - main
+        paths-ignore:
+            - "docs/**"
+            - "*.md"
+        types: [opened, ready_for_review, reopened, synchronize]
+
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+    group: "${{ github.workflow }}-${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    dependency-review:
+        name: Dependency Review
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Check out repo
+              uses: actions/checkout@v5
+              with:
+                  persist-credentials: false
+
+            - name: Dependency review
+              uses: actions/dependency-review-action@40c09b7dc99638e5ddb0bfd91c1673effc064d8a # v4.8.1
+
+    lint:
+        name: Lint Code
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Check out repo
+              uses: actions/checkout@v5
+              with:
+                  persist-credentials: false
+
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  check-latest: true
+                  node-version-file: .nvmrc
+
+            - name: Install
+              run: npm i --ignore-scripts
+
+            - name: Audit NPM package signatures and provenance attestations
+              run: npm audit signatures
+
+            - name: Run ESLint
+              run: npm run lint:eslint
+
+            - name: Run Prettier
+              run: npm run lint:prettier
+
+            - name: Run Licensee
+              run: npm run lint:licenses
+
+            - name: Run build
+              run: npm run build --if-present
+
+            - name: Run typecheck
+              run: npm run typecheck --if-present
+
+    commit-lint:
+        name: Lint Commit Messages
+        if: >
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]')
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Check out repo
+              uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Run Commitlint
+              uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
+              with:
+                  configFile: ./package.json
+
+    unit-tests:
+        name: Unit Tests
+        strategy:
+            matrix:
+                node-version: [20, 22, 24]
+                os: [macos-latest, ubuntu-latest, windows-latest]
+        runs-on: ${{ matrix.os }}
+        permissions:
+            contents: read
+        steps:
+            - name: Check out repo
+              uses: actions/checkout@v5
+              with:
+                  persist-credentials: false
+
+            - name: Setup Node ${{ matrix.node-version }}
+              uses: actions/setup-node@v6
+              with:
+                  check-latest: true
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Install
+              run: npm i --ignore-scripts
+
+            - name: Run tests
+              run: npm run test:unit:coverage
+
+            - name: Coveralls parallel
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  parallel: true
+                  flag-name: run-${{ matrix.node-version }}-${{ matrix.os }}
+
+    coverage:
+        name: Aggregate Coverage Calculations
+        needs: unit-tests
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Coveralls finished
+              uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  parallel-finished: true
+
+    automerge:
+        name: Automerge Dependabot PRs
+        needs: [dependency-review, lint, unit-tests]
+        if: >
+            github.event_name == 'pull_request' &&
+            github.event.pull_request.head.repo.full_name == github.repository &&
+            github.event.pull_request.user.login == 'dependabot[bot]'
+        runs-on: ubuntu-latest
+        permissions:
+            pull-requests: write
+            contents: write
+        steps:
+            - uses: fastify/github-action-merge-dependabot@1b2ed42db8f9d81a46bac83adedfc03eb5149dff # v3.11.2
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  merge-method: squash
