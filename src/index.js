@@ -1,6 +1,7 @@
 "use strict";
 
 /**
+ * @author Frazer Smith
  * @description Recursively freezes an object and its nested properties.
  * This mutates the original object.
  * @template {object} T
@@ -36,6 +37,7 @@ function freeze(target, seen) {
 }
 
 /**
+ * @author Frazer Smith
  * @description Recursively freezes an object and its nested properties.
  * This mutates the original object.
  * @template {object} T
