@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/Fdawgs/ice-barrage/compare/v1.0.0...v1.0.1) (2025-12-04)
+
+
+### Miscellaneous
+
+* **index:** add missing author jsdoc tag ([#8](https://github.com/Fdawgs/ice-barrage/issues/8)) ([4d93fe2](https://github.com/Fdawgs/ice-barrage/commit/4d93fe2a35d84711f515c6029f0dd1f88cb498b9))
+
 ## [1.0.0](https://github.com/Fdawgs/ice-barrage/compare/v0.0.1...v1.0.0) (2025-12-02)
 
 
