@@ -46,8 +46,8 @@ function freeze(target, seen) {
  * @throws {TypeError} If the argument is not an object, array, or function.
  */
 function iceBarrage(obj) {
-	const arg = typeof obj;
-	if (obj === null || (arg !== "object" && arg !== "function")) {
+	const objType = typeof obj;
+	if (obj === null || (objType !== "object" && objType !== "function")) {
 		throw new TypeError("Expected an object, array, or function");
 	}
 
