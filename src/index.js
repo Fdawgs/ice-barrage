@@ -43,8 +43,14 @@ function freeze(target, seen) {
  * @template {object} T
  * @param {T} obj - The object, array, or function to be frozen.
  * @returns {Readonly<T>} The frozen object, array, or function.
+ * @throws {TypeError} If the argument is not an object, array, or function.
  */
 function iceBarrage(obj) {
+	const objType = typeof obj;
+	if (obj === null || (objType !== "object" && objType !== "function")) {
+		throw new TypeError("Expected an object, array, or function");
+	}
+
 	return freeze(obj, new WeakSet());
 }
 
