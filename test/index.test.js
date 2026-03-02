@@ -184,4 +184,16 @@ describe("iceBarrage function", () => {
 
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 	});
+
+	it("Throws an error if the argument is not an object, array, or function", (/** @type {TestContext} */ t) => {
+		t.plan(4);
+		// @ts-expect-error Testing invalid argument
+		t.assert.throws(() => iceBarrage(null), TypeError);
+		// @ts-expect-error Testing invalid argument
+		t.assert.throws(() => iceBarrage(42), TypeError);
+		// @ts-expect-error Testing invalid argument
+		t.assert.throws(() => iceBarrage(), TypeError);
+		// @ts-expect-error Testing invalid argument
+		t.assert.throws(() => iceBarrage(undefined), TypeError);
+	});
 });
