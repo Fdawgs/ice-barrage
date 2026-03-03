@@ -24,11 +24,15 @@ function isDeepFrozen(obj, seen = new WeakSet()) {
 		return false;
 	}
 
+	const descriptors = Object.getOwnPropertyDescriptors(obj);
 	const keys = Reflect.ownKeys(obj);
 	for (let i = 0; i < keys.length; i += 1) {
-		const value = /** @type {Record<string | symbol, unknown>} */ (obj)[
-			keys[i]
-		];
+		const descriptor = descriptors[/** @type {string} */ (keys[i])];
+		// Skip accessor properties to avoid side effects
+		if (descriptor.get || descriptor.set) {
+			continue;
+		}
+		const { value } = descriptor;
 		if (
 			value !== null &&
 			(typeof value === "object" || typeof value === "function")
@@ -182,6 +186,42 @@ describe("iceBarrage function", () => {
 		};
 		iceBarrage(obj);
 
+		t.assert.strictEqual(isDeepFrozen(obj), true);
+	});
+
+	it("Does not trigger accessors during freezing", (/** @type {TestContext} */ t) => {
+		const obj = {
+			testVal: "original",
+			get badGetter() {
+				obj.testVal = "mutated";
+
+				return undefined;
+			},
+			set badSetter(/** @type {unknown} */ _) {
+				obj.testVal = "mutated";
+			},
+		};
+		iceBarrage(obj);
+
+		t.assert.strictEqual(obj.testVal, "original");
+		t.assert.strictEqual(isDeepFrozen(obj), true);
+	});
+
+	it("Does not trigger proxy traps during freezing", (/** @type {TestContext} */ t) => {
+		let trapTriggered = false;
+		const proxy = new Proxy(
+			{ nested: { a: 1 } },
+			{
+				get(obj, prop) {
+					trapTriggered = true;
+					return Reflect.get(obj, prop);
+				},
+			}
+		);
+		const obj = { child: proxy };
+		iceBarrage(obj);
+
+		t.assert.strictEqual(trapTriggered, false);
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 	});
 

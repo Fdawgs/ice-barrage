@@ -16,6 +16,7 @@ function freeze(target, seen) {
 	}
 	seen.add(target);
 
+	const descriptors = Object.getOwnPropertyDescriptors(target);
 	const keys = Reflect.ownKeys(target);
 	const keysLength = keys.length;
 	/**
@@ -23,9 +24,12 @@ function freeze(target, seen) {
 	 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
 	 */
 	for (let i = 0; i < keysLength; i += 1) {
-		const value = /** @type {Record<string | symbol, unknown>} */ (target)[
-			keys[i]
-		];
+		const descriptor = descriptors[/** @type {string} */ (keys[i])];
+		// Skip accessor properties to avoid side effects
+		if (descriptor.get || descriptor.set) {
+			continue;
+		}
+		const { value } = descriptor;
 		if (value !== null) {
 			if (typeof value === "object" || typeof value === "function") {
 				freeze(value, seen);
