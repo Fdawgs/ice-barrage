@@ -2,7 +2,8 @@
 
 /**
  * @author Frazer Smith
- * @description Recursively freezes an object and its nested properties.
+ * @description Recursively freezes an object and its data properties.
+ * Accessor properties are skipped to avoid side effects.
  * This mutates the original object.
  * @template {object} T
  * @param {T} target - The object to be frozen.
@@ -16,16 +17,21 @@ function freeze(target, seen) {
 	}
 	seen.add(target);
 
-	const keys = Reflect.ownKeys(target);
+	const descriptors = Object.getOwnPropertyDescriptors(target);
+	const keys = Reflect.ownKeys(descriptors);
 	const keysLength = keys.length;
 	/**
 	 * Imperative loops are faster than functional loops.
 	 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
 	 */
 	for (let i = 0; i < keysLength; i += 1) {
-		const value = /** @type {Record<string | symbol, unknown>} */ (target)[
-			keys[i]
-		];
+		// @ts-expect-error Symbols can be used as indices, type is too narrow
+		const descriptor = descriptors[keys[i]];
+		// Skip accessor properties to avoid side effects
+		if (descriptor.get || descriptor.set) {
+			continue;
+		}
+		const { value } = descriptor;
 		if (value !== null) {
 			if (typeof value === "object" || typeof value === "function") {
 				freeze(value, seen);
@@ -38,7 +44,8 @@ function freeze(target, seen) {
 
 /**
  * @author Frazer Smith
- * @description Recursively freezes an object and its nested properties.
+ * @description Recursively freezes an object and its data properties.
+ * Accessor properties are skipped to avoid side effects.
  * This mutates the original object.
  * @template {object} T
  * @param {T} obj - The object, array, or function to be frozen.
