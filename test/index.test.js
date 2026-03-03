@@ -27,7 +27,7 @@ function isDeepFrozen(obj, seen = new WeakSet()) {
 	const descriptors = Object.getOwnPropertyDescriptors(obj);
 	const keys = Reflect.ownKeys(obj);
 	for (let i = 0; i < keys.length; i += 1) {
-		// @ts-ignore Symbols can be used as indices, type is too narrow
+		// @ts-expect-error Symbols can be used as indices, type is too narrow
 		const descriptor = descriptors[keys[i]];
 		// Skip accessor properties to avoid side effects
 		if (descriptor.get || descriptor.set) {
