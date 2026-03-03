@@ -2,7 +2,8 @@
 
 /**
  * @author Frazer Smith
- * @description Recursively freezes an object and its nested properties.
+ * @description Recursively freezes an object and its data properties.
+ * Accessor properties are skipped to avoid side effects.
  * This mutates the original object.
  * @template {object} T
  * @param {T} target - The object to be frozen.
@@ -43,7 +44,8 @@ function freeze(target, seen) {
 
 /**
  * @author Frazer Smith
- * @description Recursively freezes an object and its nested properties.
+ * @description Recursively freezes an object and its data properties.
+ * Accessor properties are skipped to avoid side effects.
  * This mutates the original object.
  * @template {object} T
  * @param {T} obj - The object, array, or function to be frozen.
