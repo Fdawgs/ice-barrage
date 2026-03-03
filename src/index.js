@@ -24,7 +24,8 @@ function freeze(target, seen) {
 	 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
 	 */
 	for (let i = 0; i < keysLength; i += 1) {
-		const descriptor = descriptors[/** @type {string} */ (keys[i])];
+		// @ts-ignore Symbols can be used as indices, type is too narrow
+		const descriptor = descriptors[keys[i]];
 		// Skip accessor properties to avoid side effects
 		if (descriptor.get || descriptor.set) {
 			continue;
