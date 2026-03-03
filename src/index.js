@@ -17,7 +17,7 @@ function freeze(target, seen) {
 	seen.add(target);
 
 	const descriptors = Object.getOwnPropertyDescriptors(target);
-	const keys = Reflect.ownKeys(target);
+	const keys = Reflect.ownKeys(descriptors);
 	const keysLength = keys.length;
 	/**
 	 * Imperative loops are faster than functional loops.
