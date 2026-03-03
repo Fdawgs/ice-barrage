@@ -208,7 +208,7 @@ describe("iceBarrage function", () => {
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 	});
 
-	it("Does not trigger proxy traps during freezing", (/** @type {TestContext} */ t) => {
+	it("Does not trigger accessor proxy traps during freezing", (/** @type {TestContext} */ t) => {
 		let trapTriggered = false;
 		const proxy = new Proxy(
 			{ nested: { a: 1 } },
@@ -216,6 +216,10 @@ describe("iceBarrage function", () => {
 				get(obj, prop) {
 					trapTriggered = true;
 					return Reflect.get(obj, prop);
+				},
+				set(obj, prop, value) {
+					trapTriggered = true;
+					return Reflect.set(obj, prop, value);
 				},
 			}
 		);
