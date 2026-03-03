@@ -7,39 +7,44 @@ const { iceBarrage } = require("../src/index");
 /** @typedef {import('node:test').TestContext} TestContext */
 
 /**
- * Recursively checks if an object and all nested properties are frozen.
+ * Iteratively checks if an object and all nested properties are frozen.
  * @template {object} T
  * @param {T} obj - The object to be frozen.
- * @param {WeakSet<object>} seen - Set to track visited objects.
- * Stops infinite recursion on circular references.
  * @returns {boolean} True if everything is frozen.
  */
-function isDeepFrozen(obj, seen = new WeakSet()) {
-	if (seen.has(obj)) {
-		return true;
-	}
-	seen.add(obj);
+function isDeepFrozen(obj) {
+	/** @type {object[]} */
+	const stack = [obj];
+	const seen = new WeakSet();
 
-	if (!Object.isFrozen(obj)) {
-		return false;
-	}
+	while (stack.length > 0) {
+		const current = /** @type {object} */ (stack.pop());
 
-	const descriptors = Object.getOwnPropertyDescriptors(obj);
-	const keys = Reflect.ownKeys(obj);
-	for (let i = 0; i < keys.length; i += 1) {
-		// @ts-expect-error Symbols can be used as indices, type is too narrow
-		const descriptor = descriptors[keys[i]];
-		// Skip accessor properties to avoid side effects
-		if (descriptor.get || descriptor.set) {
+		if (seen.has(current)) {
 			continue;
 		}
-		const { value } = descriptor;
-		if (
-			value !== null &&
-			(typeof value === "object" || typeof value === "function")
-		) {
-			if (!isDeepFrozen(value, seen)) {
-				return false;
+		seen.add(current);
+
+		if (!Object.isFrozen(current)) {
+			return false;
+		}
+
+		const descriptors = Object.getOwnPropertyDescriptors(current);
+		const keys = Reflect.ownKeys(current);
+		const keysLength = keys.length;
+		for (let i = 0; i < keysLength; i += 1) {
+			// @ts-expect-error Symbols can be used as indices, type is too narrow
+			const descriptor = descriptors[keys[i]];
+			// Skip accessor properties to avoid side effects
+			if (descriptor.get || descriptor.set) {
+				continue;
+			}
+			const { value } = descriptor;
+			if (
+				value !== null &&
+				(typeof value === "object" || typeof value === "function")
+			) {
+				stack.push(value);
 			}
 		}
 	}
@@ -128,7 +133,7 @@ describe("iceBarrage function", () => {
 		const arr = [1, 2, 3, "a", "b", true, null];
 		iceBarrage(arr);
 
-		t.assert.strictEqual(isDeepFrozen(arr), true);
+		t.assert.strictEqual(Object.isFrozen(arr), true);
 		t.assert.throws(() => {
 			arr[0] = 100;
 		}, TypeError);
@@ -240,5 +245,19 @@ describe("iceBarrage function", () => {
 		t.assert.throws(() => iceBarrage(), TypeError);
 		// @ts-expect-error Testing invalid argument
 		t.assert.throws(() => iceBarrage(undefined), TypeError);
+	});
+
+	it("Does not cause call stack overflow on deep objects", (/** @type {TestContext} */ t) => {
+		/** @type {{ next?: object }} */
+		const root = {};
+		let cursor = root;
+
+		// 250,000 levels deep should be sufficient to cause stack overflow with recursion
+		for (let i = 0; i < 250000; i += 1) {
+			cursor.next = {};
+			cursor = cursor.next;
+		}
+		t.assert.doesNotThrow(() => iceBarrage(root));
+		t.assert.strictEqual(isDeepFrozen(root), true);
 	});
 });

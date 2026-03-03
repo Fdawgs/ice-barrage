@@ -2,7 +2,7 @@
 
 /**
  * @author Frazer Smith
- * @description Recursively freezes an object and its data properties.
+ * @description Iteratively freezes an object and its data properties.
  * Accessor properties are skipped to avoid side effects.
  * This mutates the original object.
  * @template {object} T
@@ -12,39 +12,47 @@
  * @returns {Readonly<T>} The frozen object.
  */
 function freeze(target, seen) {
-	if (seen.has(target)) {
-		return target;
-	}
-	seen.add(target);
+	/** @type {object[]} */
+	const stack = [target];
 
-	const descriptors = Object.getOwnPropertyDescriptors(target);
-	const keys = Reflect.ownKeys(descriptors);
-	const keysLength = keys.length;
-	/**
-	 * Imperative loops are faster than functional loops.
-	 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
-	 */
-	for (let i = 0; i < keysLength; i += 1) {
-		// @ts-expect-error Symbols can be used as indices, type is too narrow
-		const descriptor = descriptors[keys[i]];
-		// Skip accessor properties to avoid side effects
-		if (descriptor.get || descriptor.set) {
+	// Iterate rather than recurse to avoid call stack overflow on deep objects
+	while (stack.length > 0) {
+		const current = /** @type {object} */ (stack.pop());
+
+		if (seen.has(current)) {
 			continue;
 		}
-		const { value } = descriptor;
-		if (value !== null) {
-			if (typeof value === "object" || typeof value === "function") {
-				freeze(value, seen);
+		seen.add(current);
+
+		const descriptors = Object.getOwnPropertyDescriptors(current);
+		const keys = Reflect.ownKeys(descriptors);
+		const keysLength = keys.length;
+
+		for (let i = 0; i < keysLength; i += 1) {
+			// @ts-expect-error Symbols can be used as indices, type is too narrow
+			const descriptor = descriptors[keys[i]];
+			// Skip accessor properties to avoid side effects
+			if (descriptor.get || descriptor.set) {
+				continue;
+			}
+			const { value } = descriptor;
+			if (value !== null) {
+				if (typeof value === "object" || typeof value === "function") {
+					// Add to stack for processing
+					stack.push(value);
+				}
 			}
 		}
+
+		Object.freeze(current);
 	}
 
-	return Object.freeze(target);
+	return target;
 }
 
 /**
  * @author Frazer Smith
- * @description Recursively freezes an object and its data properties.
+ * @description Iteratively freezes an object and its data properties.
  * Accessor properties are skipped to avoid side effects.
  * This mutates the original object.
  * @template {object} T

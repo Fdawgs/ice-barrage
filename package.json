@@ -1,7 +1,7 @@
 {
 	"name": "ice-barrage",
 	"version": "1.0.0",
-	"description": "Recursively freeze JavaScript objects to make them immutable",
+	"description": "Iteratively freeze JavaScript objects to make them immutable",
 	"keywords": [
 		"freeze",
 		"frozen",
@@ -9,7 +9,7 @@
 		"deep-freeze",
 		"immutable",
 		"object",
-		"recursive"
+		"iterative"
 	],
 	"main": "src/index.js",
 	"type": "commonjs",
