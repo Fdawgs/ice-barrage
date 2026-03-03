@@ -14,8 +14,6 @@
 function freeze(target, seen) {
 	/** @type {object[]} */
 	const stack = [target];
-	/** @type {object[]} */
-	const order = [];
 
 	// Iterate rather than recurse to avoid call stack overflow on deep objects
 	while (stack.length > 0) {
@@ -25,7 +23,6 @@ function freeze(target, seen) {
 			continue;
 		}
 		seen.add(current);
-		order.push(current);
 
 		const descriptors = Object.getOwnPropertyDescriptors(current);
 		const keys = Reflect.ownKeys(descriptors);
@@ -46,12 +43,8 @@ function freeze(target, seen) {
 				}
 			}
 		}
-	}
 
-	// Freeze in reverse order to ensure children are frozen before parents
-	const orderLength = order.length;
-	for (let i = orderLength - 1; i >= 0; i -= 1) {
-		Object.freeze(order[i]);
+		Object.freeze(current);
 	}
 
 	return target;
