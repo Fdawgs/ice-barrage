@@ -8,7 +8,7 @@
  * @template {object} T
  * @param {T} target - The object to be frozen.
  * @param {WeakSet<object>} seen - Set to track visited objects.
- * Stops infinite recursion on circular references.
+ * Stops infinite loops on circular references.
  * @returns {Readonly<T>} The frozen object.
  */
 function freeze(target, seen) {
@@ -28,6 +28,10 @@ function freeze(target, seen) {
 		const keys = Reflect.ownKeys(descriptors);
 		const keysLength = keys.length;
 
+		/**
+		 * Imperative loops are faster than functional loops.
+		 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
+		 */
 		for (let i = 0; i < keysLength; i += 1) {
 			// @ts-expect-error Symbols can be used as indices, type is too narrow
 			const descriptor = descriptors[keys[i]];
