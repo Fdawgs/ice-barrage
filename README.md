@@ -23,7 +23,7 @@
 
 Install using `npm`:
 
-```bash
+```sh
 npm i ice-barrage
 ```
 
