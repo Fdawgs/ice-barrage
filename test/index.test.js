@@ -7,7 +7,8 @@ const { iceBarrage } = require("../src/index");
 /** @typedef {import('node:test').TestContext} TestContext */
 
 /**
- * Iteratively checks if an object and all nested properties are frozen.
+ * @author Frazer Smith
+ * @description Iteratively checks if an object and all nested properties are frozen.
  * @template {object} T
  * @param {T} obj - The object to be frozen.
  * @returns {boolean} True if everything is frozen.
