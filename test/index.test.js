@@ -10,7 +10,7 @@ const { iceBarrage } = require("../src/index");
  * @author Frazer Smith
  * @description Iteratively checks if an object and all nested properties are frozen.
  * @template {object} T
- * @param {T} obj - The object to be frozen.
+ * @param {T} obj - The object to check for deep freezing.
  * @returns {boolean} True if everything is frozen.
  */
 function isDeepFrozen(obj) {
