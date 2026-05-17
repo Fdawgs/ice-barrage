@@ -30,7 +30,6 @@
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features
 	"features": {
-		"ghcr.io/devcontainers/features/git:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
 	// Change owner of the /workspaces folder to the non-root user to avoid permission issues
