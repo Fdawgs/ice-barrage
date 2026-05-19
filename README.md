@@ -7,6 +7,7 @@
 [![code style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
 
 > Node.js module to iteratively freeze objects, arrays, and functions
+> devcontainer test
 
 # Overview
 
