@@ -5,6 +5,7 @@
 [![CI](https://github.com/Fdawgs/ice-barrage/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Fdawgs/ice-barrage/actions/workflows/ci.yml)
 [![Coverage status](https://coveralls.io/repos/github/Fdawgs/ice-barrage/badge.svg?branch=main)](https://coveralls.io/github/Fdawgs/ice-barrage?branch=main)
 [![code style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
+[![OSSF Scorecard](https://api.scorecard.dev/projects/github.com/Fdawgs/ice-barrage/badge)](https://ossf.github.io/scorecard-visualizer/#/projects/github.com/Fdawgs/ice-barrage)
 
 > Node.js module to iteratively freeze objects, arrays, and functions
 
