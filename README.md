@@ -1,10 +1,10 @@
 # ice-barrage
 
-[![GitHub release](https://img.shields.io/github/release/Fdawgs/ice-barrage.svg)](https://github.com/Fdawgs/ice-barrage/releases/latest/)
-[![npm version](https://img.shields.io/npm/v/ice-barrage)](https://npmjs.com/package/ice-barrage)
+[![GitHub release](https://img.shields.io/github/v/release/Fdawgs/ice-barrage)](https://github.com/Fdawgs/ice-barrage/releases/latest)
+[![npm version](https://img.shields.io/npm/v/ice-barrage)](https://www.npmjs.com/package/ice-barrage)
 [![CI](https://github.com/Fdawgs/ice-barrage/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Fdawgs/ice-barrage/actions/workflows/ci.yml)
 [![Coverage status](https://coveralls.io/repos/github/Fdawgs/ice-barrage/badge.svg?branch=main)](https://coveralls.io/github/Fdawgs/ice-barrage?branch=main)
-[![code style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
+[![code style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4?style=flat)](https://github.com/prettier/prettier)
 [![OSSF Scorecard](https://api.scorecard.dev/projects/github.com/Fdawgs/ice-barrage/badge)](https://scorecard.dev/viewer/?uri=github.com/Fdawgs/ice-barrage)
 
 > Node.js module to iteratively freeze objects, arrays, and functions
