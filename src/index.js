@@ -24,8 +24,7 @@ function freeze(target, seen) {
 		}
 		seen.add(current);
 
-		const descriptors = Object.getOwnPropertyDescriptors(current);
-		const keys = Reflect.ownKeys(descriptors);
+		const keys = Reflect.ownKeys(current);
 		const keysLength = keys.length;
 
 		/**
@@ -33,12 +32,18 @@ function freeze(target, seen) {
 		 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
 		 */
 		for (let i = 0; i < keysLength; i += 1) {
-			// @ts-expect-error Symbols can be used as indices, type is too narrow
-			const descriptor = descriptors[keys[i]];
+			const key = keys[i];
+			const descriptor = Object.getOwnPropertyDescriptor(current, key);
+
 			// Skip accessor properties to avoid side effects
-			if (descriptor.get || descriptor.set) {
+			if (
+				descriptor === undefined ||
+				descriptor.get !== undefined ||
+				descriptor.set !== undefined
+			) {
 				continue;
 			}
+
 			const { value } = descriptor;
 			if (value !== null) {
 				if (typeof value === "object" || typeof value === "function") {
