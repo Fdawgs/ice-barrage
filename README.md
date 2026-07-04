@@ -33,6 +33,8 @@ npm i ice-barrage
 Please refer to the [JSDoc comments in the source code](./src/index.js) or the [generated type definitions](https://www.npmjs.com/package/ice-barrage?activeTab=code) for information on the available options.
 
 ```js
+"use strict";
+
 const iceBarrage = require("ice-barrage");
 
 const exampleObject = {
