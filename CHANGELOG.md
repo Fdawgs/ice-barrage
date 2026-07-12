@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/Fdawgs/ice-barrage/compare/v1.0.1...v1.0.2) (2026-07-12)
+
+
+### Continuous integration
+
+* **cd:** pin installed npm version ([#70](https://github.com/Fdawgs/ice-barrage/issues/70)) ([d791510](https://github.com/Fdawgs/ice-barrage/commit/d791510602b2dd9adbc14b391c0c10b7613ad2ed))
+
 ## [1.0.1](https://github.com/Fdawgs/ice-barrage/compare/v1.0.0...v1.0.1) (2026-07-12)
 
 
