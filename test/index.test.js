@@ -150,8 +150,6 @@ describe("iceBarrage function", () => {
 		const obj = { view };
 		iceBarrage(obj);
 
-		// A non-extensible view is already `Object.isFrozen`, so the own property
-		// is what shows the view itself took the freeze path
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 		t.assert.throws(() => {
 			// @ts-expect-error Testing mutation on frozen property
@@ -218,7 +216,7 @@ describe("iceBarrage function", () => {
 		const obj = Object.freeze({ child });
 		iceBarrage(obj);
 
-		// A pre-frozen object cannot be treated as visited, as its children may not be
+		// A pre-frozen object cannot be treated as visited, as its children may not be frozen
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 		t.assert.throws(() => {
 			child.grandchild.value = 2;
