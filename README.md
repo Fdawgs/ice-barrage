@@ -14,7 +14,7 @@
 `ice-barrage` is a drop-in replacement for [`deep-freeze`](https://www.npmjs.com/package/deep-freeze), with the following improvements:
 
 - Iterative traversal to avoid call stack overflow on deep objects
-- Handling of circular references
+- Traversal into already-frozen objects, so mutable children are not left unfrozen
 - Skipping of accessor properties to avoid side effects
 - Support for Symbol keys
 - TypeScript type definitions included
