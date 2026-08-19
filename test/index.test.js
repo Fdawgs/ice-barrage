@@ -215,7 +215,6 @@ describe("iceBarrage function", () => {
 		const obj = Object.freeze({ child });
 		iceBarrage(obj);
 
-		// A pre-frozen object cannot be treated as visited, as its children may not be frozen
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 		t.assert.throws(() => {
 			child.grandchild.value = 2;
@@ -233,14 +232,13 @@ describe("iceBarrage function", () => {
 		}, TypeError);
 	});
 
-	it("Freezes a cycle of already-frozen objects", (/** @type {TestContext} */ t) => {
+	it("Freezes one frozen cycle with repeated references", (/** @type {TestContext} */ t) => {
 		/** @type {{ first?: object; second?: object }} */
 		const obj = {};
 		/** @type {{ first?: object; second?: object }} */
 		const other = {};
 
-		// Each object refers to the other twice; with a single reference each way
-		// the cycle terminates even without a revisit marker
+		// Each object references the other twice, one reference would not test revisits
 		obj.first = other;
 		obj.second = other;
 		other.first = obj;
@@ -252,20 +250,15 @@ describe("iceBarrage function", () => {
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 	});
 
-	it("Freezes two disjoint cycles of already-frozen objects", (/** @type {TestContext} */ t) => {
+	it("Freezes two separate frozen cycles", (/** @type {TestContext} */ t) => {
 		/** @type {Record<string, object>} */
 		const obj = {};
 
-		// A marker recorded for only the first frozen object seen still terminates
-		// on a single cycle, so two unconnected cycles are needed
+		// Use two cycles to ensure that revisits are handled correctly across multiple cycles
 		for (const key of ["first", "second"]) {
 			/** @type {{ other?: object }} */
 			const entry = {};
-			/** @type {{ other?: object }} */
-			const other = {};
-			entry.other = other;
-			other.other = entry;
-			Object.freeze(other);
+			entry.other = Object.freeze({ other: entry });
 			obj[key] = Object.freeze(entry);
 		}
 
