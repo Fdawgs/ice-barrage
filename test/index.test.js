@@ -197,7 +197,7 @@ describe("iceBarrage function", () => {
 		}, TypeError);
 	});
 
-	it("Freezes objects with circular references", (/** @type {TestContext} */ t) => {
+	it("Freezes self-referencing objects", (/** @type {TestContext} */ t) => {
 		/** @type {{ name: string; self?: object }} */
 		const obj = { name: "circle" };
 		obj.self = obj;
@@ -232,13 +232,13 @@ describe("iceBarrage function", () => {
 		}, TypeError);
 	});
 
-	it("Freezes one frozen cycle with repeated references", (/** @type {TestContext} */ t) => {
+	it("Freezes a cycle of already-frozen objects", (/** @type {TestContext} */ t) => {
 		/** @type {{ first?: object; second?: object }} */
 		const obj = {};
 		/** @type {{ first?: object; second?: object }} */
 		const other = {};
 
-		// Each object references the other twice, one reference would not test revisits
+		// Use two references each way as one reference can hide a missing revisit marker
 		obj.first = other;
 		obj.second = other;
 		other.first = obj;
@@ -250,11 +250,11 @@ describe("iceBarrage function", () => {
 		t.assert.strictEqual(isDeepFrozen(obj), true);
 	});
 
-	it("Freezes two separate frozen cycles", (/** @type {TestContext} */ t) => {
+	it("Freezes two disjoint cycles of already-frozen objects", (/** @type {TestContext} */ t) => {
 		/** @type {Record<string, object>} */
 		const obj = {};
 
-		// Use two cycles to ensure that revisits are handled correctly across multiple cycles
+		// Use two separate 2-node cycles as one cycle can hide a missing marker
 		for (const key of ["first", "second"]) {
 			/** @type {{ other?: object }} */
 			const entry = {};
