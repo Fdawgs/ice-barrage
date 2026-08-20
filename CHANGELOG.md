@@ -1,5 +1,49 @@
 # Changelog
 
+## [2.0.0](https://github.com/Fdawgs/ice-barrage/compare/v1.0.2...v2.0.0) (2026-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* minimum supported version bumped from node 20 to 22
+
+### Continuous integration
+
+* **cd:** install latest npm 11 for trusted publishing ([#84](https://github.com/Fdawgs/ice-barrage/issues/84)) ([246df74](https://github.com/Fdawgs/ice-barrage/commit/246df74a6ac83fe9205eb87f9902d76e14d7e0a9))
+* **ci:** add node 26 to test matrix ([#38](https://github.com/Fdawgs/ice-barrage/issues/38)) ([abf28ee](https://github.com/Fdawgs/ice-barrage/commit/abf28ee7e2d518fa985a5e6a6a0a0110a5897a06))
+* **deps:** bump coverallsapp/github-action from 2.3.7 to 2.3.8 ([#83](https://github.com/Fdawgs/ice-barrage/issues/83)) ([2ec59f1](https://github.com/Fdawgs/ice-barrage/commit/2ec59f16029a282539b19f653f6f0c1d511436bd))
+* **deps:** bump the github-owned group with 2 updates ([#82](https://github.com/Fdawgs/ice-barrage/issues/82)) ([e197329](https://github.com/Fdawgs/ice-barrage/commit/e19732925e8ae774fa813a8463353cfc30576cef))
+* **deps:** bump the github-owned group with 4 updates ([#77](https://github.com/Fdawgs/ice-barrage/issues/77)) ([f282e17](https://github.com/Fdawgs/ice-barrage/commit/f282e1727e1cf94d233c3247875135b7c2ca44a4))
+
+
+### Dependencies
+
+* **deps-dev:** bump c8 from 11.0.0 to 12.0.0 ([#74](https://github.com/Fdawgs/ice-barrage/issues/74)) ([a957fbb](https://github.com/Fdawgs/ice-barrage/commit/a957fbb130048531a4bc001711567986f011e11b))
+* **deps-dev:** bump prettier from 3.8.5 to 3.9.5 ([#76](https://github.com/Fdawgs/ice-barrage/issues/76)) ([a635858](https://github.com/Fdawgs/ice-barrage/commit/a635858520fca1fd3654b0ff19018c91aed878f5))
+* **deps-dev:** bump prettier from 3.9.5 to 3.9.6 ([#81](https://github.com/Fdawgs/ice-barrage/issues/81)) ([279a0ad](https://github.com/Fdawgs/ice-barrage/commit/279a0adf50565e760504fed060f323a6461ed742))
+* **deps-dev:** bump the commitlint group across 1 directory with 2 updates ([#39](https://github.com/Fdawgs/ice-barrage/issues/39)) ([0ae9a7d](https://github.com/Fdawgs/ice-barrage/commit/0ae9a7d8c5cbfaef4e937504cfcd968e4a720207))
+
+
+### Documentation
+
+* **readme:** correct comparison with deep-freeze ([#78](https://github.com/Fdawgs/ice-barrage/issues/78)) ([d842b98](https://github.com/Fdawgs/ice-barrage/commit/d842b983d031675de736bfdbdb28798c071ebba5))
+
+
+### Improvements
+
+* **index:** use frozenness as seen mark; reduce peak heap size ([#86](https://github.com/Fdawgs/ice-barrage/issues/86)) ([7f7c5bd](https://github.com/Fdawgs/ice-barrage/commit/7f7c5bd87a268e362220a9dc9383b9715779f7a7))
+
+
+### Miscellaneous
+
+* drop support for node 20 ([#80](https://github.com/Fdawgs/ice-barrage/issues/80)) ([62ca3d3](https://github.com/Fdawgs/ice-barrage/commit/62ca3d3af48c6e329581a1849c5f4b15481e8cea))
+
+
+### Tests
+
+* **index:** clearer test suite wording ([#85](https://github.com/Fdawgs/ice-barrage/issues/85)) ([52e611e](https://github.com/Fdawgs/ice-barrage/commit/52e611e08136f2385e3db74a35b3c55c8abf4f9b))
+* **index:** cover more object structures ([#79](https://github.com/Fdawgs/ice-barrage/issues/79)) ([8f64d46](https://github.com/Fdawgs/ice-barrage/commit/8f64d4662466152e579811edde0369072010728f))
+
 ## [1.0.2](https://github.com/Fdawgs/ice-barrage/compare/v1.0.1...v1.0.2) (2026-07-12)
 
 

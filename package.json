@@ -1,6 +1,6 @@
 {
 	"name": "ice-barrage",
-	"version": "1.0.2",
+	"version": "2.0.0",
 	"description": "Iteratively freeze JavaScript objects to make them immutable",
 	"keywords": [
 		"freeze",
