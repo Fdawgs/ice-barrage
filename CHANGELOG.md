@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/Fdawgs/ice-barrage/compare/v2.0.0...v2.0.1) (2026-08-26)
+
+
+### Bug fixes
+
+* **index:** freeze around typed arrays ([#87](https://github.com/Fdawgs/ice-barrage/issues/87)) ([c200448](https://github.com/Fdawgs/ice-barrage/commit/c200448550fe5a0b340b7d5e7cf94785fd348c34))
+
 ## [2.0.0](https://github.com/Fdawgs/ice-barrage/compare/v1.0.2...v2.0.0) (2026-08-20)
 
 
