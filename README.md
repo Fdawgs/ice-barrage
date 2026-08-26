@@ -26,7 +26,7 @@
 ## What cannot be frozen
 
 In `ice-barrage`, as in any deep-freeze implementation, `Object.freeze` freezes only an object's own data properties.
-At the time of writing, the states listed below stay mutable even though the container reports it as frozen:
+At the time of writing, the states listed below stay mutable even though the container may report it as frozen:
 
 - `Map`, `Set`, `WeakMap` and `WeakSet` contents, through `set()`, `add()`, `delete()` and `clear()`
 - `Date` values, through setters
