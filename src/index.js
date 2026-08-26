@@ -5,7 +5,7 @@
  * @description Iteratively freezes an object and its data properties.
  * Accessor properties are skipped to avoid side effects.
  *
- * ArrayBuffer views that hold elements such as `Buffer`, cannot be frozen,
+ * ArrayBuffer views that hold elements cannot be frozen,
  * but their property values are frozen.
  *
  * This mutates the original object.
