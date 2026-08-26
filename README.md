@@ -15,10 +15,28 @@
 
 - Iterative traversal to avoid call stack overflow on deep objects
 - Traversal into already-frozen objects, so mutable children are not left unfrozen
-- Skipping of accessor properties to avoid side effects
+- Cyclic references terminate, even through values `Object.freeze` cannot freeze
+- `Buffer` and `TypedArray` values that hold elements do not throw, and the rest of the graph is still frozen
+- Skipping of accessor properties to avoid side effects, including Proxy `get` and `set` traps
 - Support for Symbol keys
+- Support for freezing objects with a null prototype
 - TypeScript type definitions included
-- Input validation
+- Input validation, so primitives are rejected rather than silently returned unfrozen
+
+## What cannot be frozen
+
+In `ice-barrage`, as in any deep-freeze implementation, `Object.freeze` freezes only an object's own data properties.
+At the time of writing, the states listed below stay mutable even though the container reports it as frozen:
+
+- `Map`, `Set`, `WeakMap` and `WeakSet` contents, through `set()`, `add()`, `delete()` and `clear()`
+- `Date` values, through setters
+- `ArrayBuffer` bytes, through any view over the same buffer
+- `SharedArrayBuffer` bytes, through any view, in any thread
+- `Buffer` and `TypedArray` elements, as the view itself cannot be frozen
+- Private class fields, through any method of the class
+- Closure variables, through any call that reassigns them
+- Values behind a getter or setter, which are never traversed
+- The prototype chain, as only own properties are frozen
 
 ## Installation
 

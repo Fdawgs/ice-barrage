@@ -4,6 +4,10 @@
  * @author Frazer Smith
  * @description Iteratively freezes an object and its data properties.
  * Accessor properties are skipped to avoid side effects.
+ *
+ * ArrayBuffer views that hold elements such as `Buffer`, cannot be frozen,
+ * but their property values are frozen.
+ *
  * This mutates the original object.
  * @template {object} T
  * @param {T} obj - The object, array, or function to be frozen.
@@ -29,10 +33,13 @@ function iceBarrage(obj) {
 		const current = /** @type {object} */ (stack.pop());
 
 		/**
-		 * Only cyclic or shared input adds to `seen`, as only frozen objects repeat.
-		 * Caller-frozen objects are still traversed for mutable children.
+		 * Track views and frozen objects to prevent repeat visits. Non-empty
+		 * views throw when passed to `Object.freeze()`, so all views are
+		 * marked as seen explicitly to avoid repeat traversal.
+		 * Visit frozen objects once to process their mutable children.
 		 */
-		if (Object.isFrozen(current)) {
+		const isView = ArrayBuffer.isView(current);
+		if (isView || Object.isFrozen(current)) {
 			if (seen.has(current)) {
 				continue;
 			}
@@ -68,7 +75,14 @@ function iceBarrage(obj) {
 			}
 		}
 
-		Object.freeze(current);
+		/**
+		 * Skip non-empty views because `Object.freeze()` throws when
+		 * they contain indexed elements.
+		 */
+		const hasNoElements = !isView || !Object.hasOwn(current, "0");
+		if (hasNoElements) {
+			Object.freeze(current);
+		}
 	}
 
 	return obj;
