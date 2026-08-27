@@ -22,10 +22,7 @@ function iceBarrage(obj) {
 
 	/** @type {object[]} */
 	const stack = [obj];
-	/**
-	 * Track visited objects, stops infinite loops on circular references.
-	 * @type {Set<object>}
-	 */
+	/** @type {Set<object>} */
 	const seen = new Set();
 
 	// Iterate rather than recurse to avoid call stack overflow on deep objects
