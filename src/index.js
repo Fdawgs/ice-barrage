@@ -22,8 +22,8 @@ function iceBarrage(obj) {
 
 	/** @type {object[]} */
 	const stack = [obj];
-	/** @type {Set<object>} */
-	const seen = new Set();
+	/** @type {Set<object> | undefined} */
+	let seen;
 
 	// Iterate rather than recurse to avoid call stack overflow on deep objects
 	while (stack.length > 0) {
@@ -37,6 +37,7 @@ function iceBarrage(obj) {
 		 */
 		const isView = ArrayBuffer.isView(current);
 		if (isView || Object.isFrozen(current)) {
+			seen ??= new Set();
 			if (seen.has(current)) {
 				continue;
 			}
