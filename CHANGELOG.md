@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.2](https://github.com/Fdawgs/ice-barrage/compare/v2.0.1...v2.0.2) (2026-08-28)
+
+
+### Improvements
+
+* **index:** lazily allocate traversal set ([#91](https://github.com/Fdawgs/ice-barrage/issues/91)) ([04d1c17](https://github.com/Fdawgs/ice-barrage/commit/04d1c171951bdf1b6bd7bef2aa95ca86231fccec))
+* **index:** skip typed array element descriptors ([#92](https://github.com/Fdawgs/ice-barrage/issues/92)) ([452c08d](https://github.com/Fdawgs/ice-barrage/commit/452c08d1b704fab1fdb72fd8942a368679e8d67b))
+
+
+### Miscellaneous
+
+* **index:** remove restatement of tracking ([#89](https://github.com/Fdawgs/ice-barrage/issues/89)) ([1f0bf4c](https://github.com/Fdawgs/ice-barrage/commit/1f0bf4c86e92492db316009949c72e3e252d1f86))
+
 ## [2.0.1](https://github.com/Fdawgs/ice-barrage/compare/v2.0.0...v2.0.1) (2026-08-26)
 
 
