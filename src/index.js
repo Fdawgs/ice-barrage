@@ -1,12 +1,22 @@
 "use strict";
 
+const { isSharedArrayBuffer, isTypedArray } = require("node:util").types;
+
+/**
+ * @param {object} typedArray - The TypedArray to inspect.
+ * @returns {number} The number of indexed elements.
+ */
+function getTypedArrayLength(typedArray) {
+	return Reflect.get(Uint8Array.prototype, "length", typedArray);
+}
+
 /**
  * @author Frazer Smith
  * @description Iteratively freezes an object and its data properties.
  * Accessor properties are skipped to avoid side effects.
  *
- * ArrayBuffer views that hold elements cannot be frozen,
- * but their property values are frozen.
+ * ArrayBuffer views that hold or can concurrently gain elements are not
+ * frozen, but their property values are frozen.
  *
  * This mutates the original object.
  * @template {object} T
@@ -36,12 +46,26 @@ function iceBarrage(obj) {
 		 * Visit frozen objects once to process their mutable children.
 		 */
 		const isView = ArrayBuffer.isView(current);
+		// TypedArrays are integer indexed, but DataViews are not
+		const isIntegerIndexed = isView && isTypedArray(current);
 		if (isView || Object.isFrozen(current)) {
 			seen ??= new Set();
 			if (seen.has(current)) {
 				continue;
 			}
 			seen.add(current);
+		}
+
+		const indexedKeysLength = isIntegerIndexed
+			? getTypedArrayLength(current)
+			: 0;
+		// Determine if the view can grow concurrently, which is only possible for growable SharedArrayBuffers
+		let canGrowConcurrently = false;
+		if (isIntegerIndexed && indexedKeysLength === 0) {
+			const buffer = Reflect.get(Uint8Array.prototype, "buffer", current);
+			canGrowConcurrently =
+				isSharedArrayBuffer(buffer) &&
+				Reflect.get(SharedArrayBuffer.prototype, "growable", buffer);
 		}
 
 		const keys = Reflect.ownKeys(current);
@@ -51,7 +75,7 @@ function iceBarrage(obj) {
 		 * Imperative loops are faster than functional loops.
 		 * @see {@link https://romgrk.com/posts/optimizing-javascript#3-avoid-arrayobject-methods | Optimizing Javascript}
 		 */
-		for (let i = 0; i < keysLength; i += 1) {
+		for (let i = indexedKeysLength; i < keysLength; i += 1) {
 			const key = keys[i];
 			const descriptor = Object.getOwnPropertyDescriptor(current, key);
 
@@ -74,11 +98,12 @@ function iceBarrage(obj) {
 		}
 
 		/**
-		 * Skip non-empty views because `Object.freeze()` throws when
-		 * they contain indexed elements.
+		 * Skip views that contain or can concurrently gain indexed elements
+		 * because `Object.freeze()` can throw for them.
 		 */
-		const hasNoElements = !isView || !Object.hasOwn(current, "0");
-		if (hasNoElements) {
+		const hasIndexedElements =
+			isIntegerIndexed && (indexedKeysLength > 0 || canGrowConcurrently);
+		if (!hasIndexedElements) {
 			Object.freeze(current);
 		}
 	}
