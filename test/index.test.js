@@ -347,6 +347,22 @@ describe("iceBarrage function", () => {
 			}, TypeError);
 		});
 
+		it("Freezes DataViews with own index-like properties", (/** @type {TestContext} */ t) => {
+			const view = new DataView(new ArrayBuffer(8));
+			const child = { a: 1 };
+			Object.defineProperty(view, "0", {
+				configurable: true,
+				enumerable: true,
+				value: child,
+				writable: true,
+			});
+			iceBarrage({ view });
+
+			t.plan(2);
+			t.assert.strictEqual(Object.isFrozen(view), true);
+			t.assert.strictEqual(Object.isFrozen(child), true);
+		});
+
 		it("Freezes DataViews from another realm", (/** @type {TestContext} */ t) => {
 			const view = runInNewContext("new DataView(new ArrayBuffer(8))");
 
@@ -396,6 +412,87 @@ describe("iceBarrage function", () => {
 			t.assert.doesNotThrow(() => iceBarrage({ view }));
 			// @ts-expect-error Testing own property on a view
 			t.assert.strictEqual(Object.isFrozen(view.customProp), true);
+		});
+
+		it("Freezes properties of TypedArrays from another realm", (/** @type {TestContext} */ t) => {
+			const view = runInNewContext("new Uint8Array(4)");
+			view.customProp = { a: 1 };
+
+			t.plan(4);
+			t.assert.strictEqual(ArrayBuffer.isView(view), true);
+			t.assert.strictEqual(view instanceof Uint8Array, false);
+
+			iceBarrage({ view });
+			t.assert.strictEqual(Object.isFrozen(view), false);
+			t.assert.strictEqual(Object.isFrozen(view.customProp), true);
+		});
+
+		it("Freezes custom TypedArray properties without reading overridden accessors", (/** @type {TestContext} */ t) => {
+			let lengthRead = false;
+			class CustomView extends Uint8Array {}
+
+			const view = new CustomView(4);
+			const customValues = [{ a: 1 }, { b: 2 }, { c: 3 }, { d: 4 }];
+			const symbol = Symbol("custom");
+			Object.defineProperties(view, {
+				"00": { value: customValues[0] },
+				"1e2": { value: customValues[1] },
+				hidden: { value: customValues[2] },
+				length: {
+					get() {
+						lengthRead = true;
+
+						return 0;
+					},
+				},
+			});
+			Object.defineProperty(view, symbol, { value: customValues[3] });
+			iceBarrage(view);
+
+			t.plan(6);
+			t.assert.strictEqual(lengthRead, false);
+			t.assert.strictEqual(Object.isFrozen(view), false);
+			for (const value of customValues) {
+				t.assert.strictEqual(Object.isFrozen(value), true);
+			}
+		});
+
+		it("Freezes properties of views over resizable and growable buffers", (/** @type {TestContext} */ t) => {
+			const arrayBuffer = new ArrayBuffer(4, { maxByteLength: 8 });
+			const sharedArrayBuffer = new SharedArrayBuffer(4, {
+				maxByteLength: 8,
+			});
+			const arrayView = new Uint8Array(arrayBuffer);
+			const sharedArrayView = new Uint8Array(sharedArrayBuffer);
+			const arrayChild = { a: 1 };
+			const sharedArrayChild = { b: 2 };
+			Object.defineProperty(arrayView, "custom", { value: arrayChild });
+			Object.defineProperty(sharedArrayView, "custom", {
+				value: sharedArrayChild,
+			});
+
+			arrayBuffer.resize(8);
+			sharedArrayBuffer.grow(8);
+			iceBarrage({ arrayView, sharedArrayView });
+
+			t.plan(4);
+			t.assert.strictEqual(Object.isFrozen(arrayView), false);
+			t.assert.strictEqual(Object.isFrozen(sharedArrayView), false);
+			t.assert.strictEqual(Object.isFrozen(arrayChild), true);
+			t.assert.strictEqual(Object.isFrozen(sharedArrayChild), true);
+		});
+
+		it("Freezes around views that can concurrently gain elements", (/** @type {TestContext} */ t) => {
+			const buffer = new SharedArrayBuffer(0, { maxByteLength: 8 });
+			const view = new Uint8Array(buffer);
+			const child = { a: 1 };
+			Object.defineProperty(view, "custom", { value: child });
+			iceBarrage(view);
+
+			t.plan(3);
+			t.assert.strictEqual(Object.isFrozen(view), false);
+			t.assert.strictEqual(Object.isFrozen(child), true);
+			t.assert.doesNotThrow(() => buffer.grow(8));
 		});
 
 		it("Freezes the properties of a view passed as the root", (/** @type {TestContext} */ t) => {
