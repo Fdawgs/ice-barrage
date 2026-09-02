@@ -111,6 +111,26 @@ describe("iceBarrage function", () => {
 			t.plan(1);
 			t.assert.strictEqual(isDeepFrozen(iceBarrage(obj)), true);
 		});
+
+		it("Freezes data properties when Object.prototype is polluted", (/** @type {TestContext} */ t) => {
+			const obj = { nested: { deep: { value: 1 } } };
+
+			// Descriptors inherit the polluted key, so a prototype-chain check misreads them as accessors
+			// eslint-disable-next-line no-extend-native -- Simulates pollution by another module
+			Object.defineProperty(Object.prototype, "get", {
+				configurable: true,
+				value: () => {},
+			});
+			try {
+				iceBarrage(obj);
+			} finally {
+				Reflect.deleteProperty(Object.prototype, "get");
+			}
+
+			t.plan(2);
+			t.assert.strictEqual(Object.hasOwn(Object.prototype, "get"), false);
+			t.assert.strictEqual(isDeepFrozen(obj), true);
+		});
 	});
 
 	describe("Shared, cyclic, and already-frozen graphs", () => {
