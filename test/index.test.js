@@ -268,6 +268,41 @@ describe("iceBarrage function", () => {
 			}
 		);
 
+		it(
+			"Freezes around Buffers that hold more elements than V8 can enumerate",
+			{ timeout: 5000 },
+			(/** @type {TestContext} */ t) => {
+				const payload = {
+					file: Buffer.alloc(2 ** 24 + 1),
+					meta: { id: 1 },
+				};
+
+				t.plan(3);
+				t.assert.doesNotThrow(() => iceBarrage(payload));
+				t.assert.strictEqual(Object.isFrozen(payload.meta), true);
+				t.assert.strictEqual(Object.isFrozen(payload.file), false);
+			}
+		);
+
+		it("Skips properties of views above the enumeration limit", (/** @type {TestContext} */ t) => {
+			const symbol = Symbol("custom");
+			const belowLimit = new Uint8Array(65536);
+			const aboveLimit = new Uint8Array(65537);
+			const children = [{ a: 1 }, { b: 2 }, { c: 3 }, { d: 4 }];
+			Object.defineProperty(belowLimit, "custom", { value: children[0] });
+			Object.defineProperty(belowLimit, symbol, { value: children[1] });
+			Object.defineProperty(aboveLimit, "custom", { value: children[2] });
+			Object.defineProperty(aboveLimit, symbol, { value: children[3] });
+
+			iceBarrage({ aboveLimit, belowLimit });
+
+			t.plan(4);
+			t.assert.strictEqual(Object.isFrozen(children[0]), true);
+			t.assert.strictEqual(Object.isFrozen(children[1]), true);
+			t.assert.strictEqual(Object.isFrozen(children[2]), false);
+			t.assert.strictEqual(Object.isFrozen(children[3]), false);
+		});
+
 		it("Freezes properties of TypedArrays from another realm", (/** @type {TestContext} */ t) => {
 			const view = runInNewContext("new Uint8Array(4)");
 			view.customProp = { a: 1 };
