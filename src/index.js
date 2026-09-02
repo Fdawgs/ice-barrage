@@ -81,11 +81,14 @@ function iceBarrage(obj) {
 			const key = keys[i];
 			const descriptor = Object.getOwnPropertyDescriptor(current, key);
 
-			// Skip accessor properties to avoid side effects
+			/**
+			 * Skip accessor properties to avoid side effects.
+			 * Only data descriptors own `value`, and an own-key check cannot
+			 * be fooled by a polluted `Object.prototype.get` or `set`.
+			 */
 			if (
 				descriptor === undefined ||
-				descriptor.get !== undefined ||
-				descriptor.set !== undefined
+				!Object.hasOwn(descriptor, "value")
 			) {
 				continue;
 			}
