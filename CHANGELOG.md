@@ -1,5 +1,38 @@
 # Changelog
 
+## [2.0.3](https://github.com/Fdawgs/ice-barrage/compare/v2.0.2...v2.0.3) (2026-09-02)
+
+
+### Bug fixes
+
+* **index:** cap typed array key enumeration ([#100](https://github.com/Fdawgs/ice-barrage/issues/100)) ([8869ac4](https://github.com/Fdawgs/ice-barrage/commit/8869ac42637d26868d403d90c382f3ae8faa760b))
+* **index:** harden accessor check against prototype pollution ([#99](https://github.com/Fdawgs/ice-barrage/issues/99)) ([6890415](https://github.com/Fdawgs/ice-barrage/commit/6890415631931a5ea4e0289aadb69e55756637ad))
+
+
+### Continuous integration
+
+* **deps:** bump the github-owned group with 2 updates ([#96](https://github.com/Fdawgs/ice-barrage/issues/96)) ([c85d58a](https://github.com/Fdawgs/ice-barrage/commit/c85d58ad6d218a050ac2e0c6502e60eceb784876))
+
+
+### Dependencies
+
+* **deps:** bump ghcr.io/devcontainers/features/github-cli ([#95](https://github.com/Fdawgs/ice-barrage/issues/95)) ([e710cb1](https://github.com/Fdawgs/ice-barrage/commit/e710cb17ac4fb6eab60c198fcc97e814cc2b3723))
+
+
+### Documentation
+
+* **readme:** advise freezing once and for trusted input only ([#98](https://github.com/Fdawgs/ice-barrage/issues/98)) ([e505842](https://github.com/Fdawgs/ice-barrage/commit/e5058422931ae35f311d9c948c0bf09e9783a1b1))
+
+
+### Improvements
+
+* **index:** use extensibility as seen marker ([#97](https://github.com/Fdawgs/ice-barrage/issues/97)) ([e316927](https://github.com/Fdawgs/ice-barrage/commit/e316927e98b1adbb4762b1be84624556394540b9))
+
+
+### Tests
+
+* **index:** simplify and reorganise ([#93](https://github.com/Fdawgs/ice-barrage/issues/93)) ([bc08750](https://github.com/Fdawgs/ice-barrage/commit/bc087501fc9429819a29f2565ff21201840fecb3))
+
 ## [2.0.2](https://github.com/Fdawgs/ice-barrage/compare/v2.0.1...v2.0.2) (2026-08-28)
 
 
