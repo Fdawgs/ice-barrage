@@ -51,7 +51,9 @@ npm i ice-barrage
 
 Please refer to the [JSDoc comments in the source code](./src/index.js) or the [generated type definitions](https://www.npmjs.com/package/ice-barrage?activeTab=code) for information on the available options.
 
-Each call traverses the whole graph, frozen objects included, so freeze once rather than on every use:
+Each call traverses the whole graph, frozen objects included, so freeze once rather than on every use.
+Traversal cost grows with the size of the graph, so it is recommended to only freeze trusted data such as local configuration objects
+rather than request bodies or other input of unbounded size:
 
 ```js
 "use strict";
