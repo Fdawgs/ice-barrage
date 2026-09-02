@@ -51,23 +51,29 @@ npm i ice-barrage
 
 Please refer to the [JSDoc comments in the source code](./src/index.js) or the [generated type definitions](https://www.npmjs.com/package/ice-barrage?activeTab=code) for information on the available options.
 
+Each call traverses the whole graph, frozen objects included, so freeze once rather than on every use.
+Traversal cost grows with the size of the graph, so it is recommended to only freeze trusted data such as local configuration objects
+rather than request bodies or other input of unbounded size:
+
 ```js
 "use strict";
 
 const iceBarrage = require("ice-barrage");
 
-const exampleObject = {
+// iceBarrage mutates and returns the input object
+const config = iceBarrage({
 	a: 1,
 	b: {
 		c: 2,
 		d: [3, 4, 5],
 	},
-};
+});
 
-iceBarrage(exampleObject); // iceBarrage mutates the input object
-console.log(Object.isFrozen(exampleObject)); // true
-console.log(Object.isFrozen(exampleObject.b)); // true
-console.log(Object.isFrozen(exampleObject.b.d)); // true
+console.log(Object.isFrozen(config)); // true
+console.log(Object.isFrozen(config.b)); // true
+console.log(Object.isFrozen(config.b.d)); // true
+
+module.exports = config;
 ```
 
 ## Contributing
