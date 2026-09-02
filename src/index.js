@@ -40,15 +40,17 @@ function iceBarrage(obj) {
 		const current = /** @type {object} */ (stack.pop());
 
 		/**
-		 * Track views and frozen objects to prevent repeat visits. Non-empty
-		 * views throw when passed to `Object.freeze()`, so all views are
-		 * marked as seen explicitly to avoid repeat traversal.
-		 * Visit frozen objects once to process their mutable children.
+		 * Track views and non-extensible objects to prevent repeat visits.
+		 * Non-empty views throw when passed to `Object.freeze()`, so all views
+		 * are marked as seen explicitly to avoid repeat traversal.
+		 * Visit non-extensible objects once to process their mutable children.
+		 * `Object.isExtensible()` is O(1) in every state, whereas
+		 * `Object.isFrozen()` walks every property of a non-extensible object.
 		 */
 		const isView = ArrayBuffer.isView(current);
 		// TypedArrays are integer indexed, but DataViews are not
 		const isIntegerIndexed = isView && isTypedArray(current);
-		if (isView || Object.isFrozen(current)) {
+		if (isView || !Object.isExtensible(current)) {
 			seen ??= new Set();
 			if (seen.has(current)) {
 				continue;
