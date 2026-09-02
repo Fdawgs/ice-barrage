@@ -143,6 +143,24 @@ describe("iceBarrage function", () => {
 			t.plan(1);
 			t.assert.strictEqual(isDeepFrozen(obj), true);
 		});
+
+		it("Freezes sealed and non-extensible shared subtrees", (/** @type {TestContext} */ t) => {
+			const sealed = Object.seal({ deep: { value: 1 } });
+			const nonExtensible = Object.preventExtensions({
+				deep: { value: 2 },
+			});
+			const obj = {
+				first: { nonExtensible, sealed },
+				second: { nonExtensible, sealed },
+			};
+
+			iceBarrage(obj);
+
+			t.plan(3);
+			t.assert.strictEqual(Object.isFrozen(sealed), true);
+			t.assert.strictEqual(Object.isFrozen(nonExtensible), true);
+			t.assert.strictEqual(isDeepFrozen(obj), true);
+		});
 	});
 
 	describe("ArrayBuffer views that can be frozen", () => {
