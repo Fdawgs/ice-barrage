@@ -11,12 +11,10 @@ function getTypedArrayLength(typedArray) {
 }
 
 /**
- * `Reflect.ownKeys()` materialises one string per TypedArray element before
- * they can be skipped, and throws a RangeError above 2**24 keys. Views longer
- * than this are not traversed. 64 KiB caps the cost at about 5 ms and 3 MB
- * per view whilst covering the small binary values that carry properties.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys#return_value | Reflect.ownKeys() return value}
- * @see {@link https://chromium.googlesource.com/v8/v8/+/refs/heads/main/src/objects/keys.cc | V8 KeyAccumulator::AddKey()}
+ * TypedArrays longer than this are not traversed, so their property values
+ * stay unfrozen. `Reflect.ownKeys()` materialises one string per element and
+ * throws a RangeError above 2**24 keys; 65,536 caps the cost at about 5 ms and
+ * 3 MB per view whilst covering small binary values that carry properties.
  */
 const MAX_ENUMERATED_VIEW_LENGTH = 65536;
 
@@ -72,7 +70,7 @@ function iceBarrage(obj) {
 		const indexedKeysLength = isIntegerIndexed
 			? getTypedArrayLength(current)
 			: 0;
-		// Long views are leaves as their keys cannot be enumerated affordably
+		// Long views are too costly to enumerate
 		if (indexedKeysLength > MAX_ENUMERATED_VIEW_LENGTH) {
 			continue;
 		}
