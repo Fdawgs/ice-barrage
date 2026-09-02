@@ -11,12 +11,21 @@ function getTypedArrayLength(typedArray) {
 }
 
 /**
+ * TypedArrays longer than this are not traversed, so their property values
+ * stay unfrozen. `Reflect.ownKeys()` materialises one string per element and
+ * throws a RangeError above 2**24 keys; 65,536 caps the cost at about 5 ms and
+ * 3 MB per view whilst covering small binary values that carry properties.
+ */
+const MAX_ENUMERATED_VIEW_LENGTH = 65536;
+
+/**
  * @author Frazer Smith
  * @description Iteratively freezes an object and its data properties.
  * Accessor properties are skipped to avoid side effects.
  *
  * ArrayBuffer views that hold or can concurrently gain elements are not
- * frozen, but their property values are frozen.
+ * frozen, but their property values are frozen. Views longer than 65,536
+ * elements are not traversed.
  *
  * This mutates the original object.
  * @template {object} T
@@ -61,6 +70,10 @@ function iceBarrage(obj) {
 		const indexedKeysLength = isIntegerIndexed
 			? getTypedArrayLength(current)
 			: 0;
+		// Long views are too costly to enumerate
+		if (indexedKeysLength > MAX_ENUMERATED_VIEW_LENGTH) {
+			continue;
+		}
 		// Determine if the view can grow concurrently, which is only possible for growable SharedArrayBuffers
 		let canGrowConcurrently = false;
 		if (isIntegerIndexed && indexedKeysLength === 0) {

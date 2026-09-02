@@ -33,6 +33,7 @@ At the time of writing, the states listed below stay mutable even though the con
 - `ArrayBuffer` bytes, through any view over the same buffer
 - `SharedArrayBuffer` bytes, through any view, in any thread
 - `Buffer` and `TypedArray` elements, as the view itself cannot be frozen
+- Properties of `Buffer` and `TypedArray` views longer than 65,536 elements, as key enumeration scales with view length and throws a `RangeError` past 16,777,216 elements
 - Empty `TypedArray` views over growable `SharedArrayBuffer` storage, which are left unfrozen to avoid a concurrent-growth race
 - Private class fields, through any method of the class
 - Closure variables, through any call that reassigns them
